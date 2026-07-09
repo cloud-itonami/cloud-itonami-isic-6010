@@ -1,0 +1,11 @@
+{:itonami.blueprint/id "cloud-itonami-6010"
+ :itonami.blueprint/name "Community Radio Broadcasting Operations"
+ :itonami.blueprint/isic-rev5 "6010"
+ :itonami.blueprint/domain :media/radio-broadcasting
+ :itonami.blueprint/license "AGPL-3.0-or-later"
+ :itonami.blueprint/social-impact [:media-plurality :local-information-access :content-accountability]
+ :itonami.blueprint/governor :radio-broadcast-governor
+ :itonami.blueprint/robotics true
+ :itonami.blueprint/required-technologies [:robotics :identity :forms :dmn :bpmn :audit-ledger :phone]
+ :itonami.blueprint/optional-technologies [:optimization]
+ :itonami.blueprint/status :public-oss}
