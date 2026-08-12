@@ -1,6 +1,16 @@
 {:paths ["src"]
- :deps {io.github.kotoba-lang/langgraph
-        {:git/sha "a332a770a0d2b5193f81b54483bb954fb29ef8d7"}}
+ ;; langgraph brings langchain transitively (both zero-/single-dep, all
+ ;; .cljc). It lives in the kotoba-lang org of this workspace, so the
+ ;; :local/root path only resolves inside the monorepo checkout -- a
+ ;; standalone fork should override it with git coordinates.
+ ;; jp-go-digital-design-system (DADS) is the workspace's base design
+ ;; system; `radioops.render-html` uses it to style the generated
+ ;; operator console.
+ :deps {io.github.kotoba-lang/jp-go-digital-design-system
+        {:git/url "https://github.com/kotoba-lang/jp-go-digital-design-system"
+         :git/sha "83db99546eabc53613ae826ea41d1533a3c574af"}
+        io.github.kotoba-lang/langgraph
+        {:local/root "../../kotoba-lang/langgraph"}}
  :aliases
  {:dev {:override-deps
         {io.github.kotoba-lang/langgraph
@@ -8,6 +18,10 @@
          io.github.kotoba-lang/langchain
          {:local/root "../../kotoba-lang/langchain"}}}
   :run {:main-opts ["-m" "radioops.sim"]}
+  ;; clojure -M:dev:render-html [out-file] -> regenerate
+  ;; docs/samples/operator-console.html through the REAL actor stack
+  ;; (flagship checklist item 2).
+  :render-html {:main-opts ["-m" "radioops.render-html"]}
   :test {:extra-paths ["test"]
          :extra-deps {io.github.cognitect-labs/test-runner
                       {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
