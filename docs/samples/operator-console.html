@@ -2555,6 +2555,76 @@ img,svg { max-width: 100%; height: auto; }
     </table>
   </section>
   <section class="card">
+    <h2>advisor が起草した提案の全文（コミットされなかったものを含む）</h2>
+    <p class="muted">上のトレースは<strong>止まったかどうか</strong>を、この表は<strong>何が起草されたか</strong>を示します。ホールドされた提案は SSoT に一切書かれないため、その中身はグラフ実行の <code>:proposal</code> チャネルにしか存在しません——台帳だけを読んでも「何が止められたのか」は分かりません。行は <code>radioops.advisor</code> が実際に返した提案そのもので、<code>:effect</code> が <code>:propose</code> 以外の行は advisor の逸脱です。</p>
+    <table>
+      <thead><tr><th>#</th><th>op</th><th>局</th><th>:effect</th><th>信頼度</th><th>advisor の要約</th><th>下書き payload</th><th>何が止めたか</th></tr></thead>
+      <tbody>
+        <tr><td><code>t01</code></td><td><code>:log-broadcast-record</code></td><td><code>station-1</code></td><td><code>:propose</code></td><td><span class="num">0.94</span></td><td>station-1 の放送記録（プレイリスト/セグメント/オンエアログ）を記録: (:segment :playlist-count)</td><td><code>:playlist-count</code>=<span class="num">14</span> <code>:segment</code>=<span class="num">&quot;morning show&quot;</span></td><td><span class="ok">何も止めていない（コミット済み）</span></td></tr>
+        <tr><td><code>t02</code></td><td><code>:schedule-broadcast-operation</code></td><td><code>station-1</code></td><td><code>:propose</code></td><td><span class="num">0.89</span></td><td>station-1 の番組編成（セグメント）スケジュールを提案: (:segment :date)</td><td><code>:date</code>=<span class="num">&quot;2026-08-01&quot;</span> <code>:segment</code>=<span class="num">&quot;evening news&quot;</span></td><td><span class="ok">何も止めていない（コミット済み）</span></td></tr>
+        <tr><td><code>t03</code></td><td><code>:coordinate-equipment-maintenance</code></td><td><code>station-1</code></td><td><code>:propose</code></td><td><span class="num">0.9</span></td><td>station-1 の送信所/スタジオ設備の保守調整を提案: (:equipment :window)</td><td><code>:equipment</code>=<span class="num">&quot;transmitter&quot;</span> <code>:window</code>=<span class="num">&quot;2026-08-03T02:00&quot;</span></td><td><span class="ok">何も止めていない（コミット済み）</span></td></tr>
+        <tr><td><code>t04</code></td><td><code>:log-broadcast-record</code></td><td><code>station-2</code></td><td><code>:propose</code></td><td><span class="num">0.94</span></td><td>station-2 の放送記録（プレイリスト/セグメント/オンエアログ）を記録: (:segment :playlist-count)</td><td><code>:playlist-count</code>=<span class="num">18</span> <code>:segment</code>=<span class="num">&quot;afternoon drive&quot;</span></td><td><span class="ok">何も止めていない（コミット済み）</span></td></tr>
+        <tr><td><code>t05</code></td><td><code>:schedule-broadcast-operation</code></td><td><code>station-2</code></td><td><code>:propose</code></td><td><span class="num">0.89</span></td><td>station-2 の番組編成（セグメント）スケジュールを提案: (:segment :date)</td><td><code>:date</code>=<span class="num">&quot;2026-08-05&quot;</span> <code>:segment</code>=<span class="num">&quot;civic town hall&quot;</span></td><td><span class="ok">何も止めていない（コミット済み）</span></td></tr>
+        <tr><td><code>t06</code></td><td><code>:flag-content-concern</code></td><td><code>station-1</code></td><td><code>:propose</code></td><td><span class="num">0.92</span></td><td>station-1 のコンテンツ懸念フラグ: &quot;possible EAS test-tone mistimed during a live segment&quot;</td><td><code>:concern</code>=<span class="num">&quot;possible EAS test-tone mistimed during a live segment&quot;</span> <code>:confidence</code>=<span class="num">0.92</span></td><td><span class="ok">何も止めていない（コミット済み）</span></td></tr>
+        <tr><td><code>t07</code></td><td><code>:flag-content-concern</code></td><td><code>station-2</code></td><td><code>:propose</code></td><td><span class="num">0.88</span></td><td>station-2 のコンテンツ懸念フラグ: &quot;sponsor identification announcement missing from a paid segment&quot;</td><td><code>:concern</code>=<span class="num">&quot;sponsor identification announcement missing from a paid segment&quot;</span> <code>:confidence</code>=<span class="num">0.88</span></td><td><span class="err">人間（承認者が却下）</span></td></tr>
+        <tr><td><code>t08</code></td><td><code>:coordinate-equipment-maintenance</code></td><td><code>station-2</code></td><td><code>:propose</code></td><td><span class="num">0.9</span></td><td>station-2 の送信所/スタジオ設備の保守調整を提案: (:equipment :window)</td><td><code>:equipment</code>=<span class="num">&quot;studio console&quot;</span> <code>:window</code>=<span class="num">&quot;2026-08-09T03:00&quot;</span></td><td><span class="warn">phase gate · phase-disabled</span></td></tr>
+        <tr><td><code>t09</code></td><td><code>:log-broadcast-record</code></td><td><code>station-99</code></td><td><code>:propose</code></td><td><span class="num">0.94</span></td><td>station-99 の放送記録（プレイリスト/セグメント/オンエアログ）を記録: (:segment)</td><td><code>:segment</code>=<span class="num">&quot;unknown&quot;</span></td><td><span class="critical">governor · station-unverified</span></td></tr>
+        <tr><td><code>t10</code></td><td><code>:log-broadcast-record</code></td><td><code>station-3</code></td><td><code>:propose</code></td><td><span class="num">0.94</span></td><td>station-3 の放送記録（プレイリスト/セグメント/オンエアログ）を記録: (:segment)</td><td><code>:segment</code>=<span class="num">&quot;draft&quot;</span></td><td><span class="critical">governor · station-unverified</span></td></tr>
+        <tr><td><code>t11</code></td><td><code>:schedule-broadcast-operation</code></td><td><code>station-1</code></td><td><span class="critical"><code>:commit</code></span></td><td><span class="num">0.89</span></td><td>station-1 の番組編成（セグメント）スケジュールを提案: (:segment)</td><td><code>:segment</code>=<span class="num">&quot;midday talk&quot;</span></td><td><span class="critical">governor · effect-not-propose</span></td></tr>
+        <tr><td><code>t12</code></td><td><code>:log-broadcast-record</code></td><td><code>station-1</code></td><td><code>:propose</code></td><td><span class="num">0.94</span></td><td>station-1 の放送記録（プレイリスト/セグメント/オンエアログ）を記録: nil</td><td><span class="muted">（空）</span></td><td><span class="critical">governor · scope-excluded</span></td></tr>
+        <tr><td><code>t13</code></td><td><code>:authorize-emergency-alert-broadcast</code></td><td><code>station-2</code></td><td><code>:propose</code></td><td><span class="num">0.71</span></td><td>station-2 の緊急警報放送(EAS)を発令する</td><td><span class="muted">（空）</span></td><td><span class="critical">governor · op-not-allowed</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+  <section class="card">
+    <h2>放送記録のログ（プレイリスト/セグメント/オンエアログ）</h2>
+    <p class="muted"><code>:log-broadcast-record</code> として起草された提案 <span class="num">5</span> 件。値はすべてこの実行の実データで、<code>radioops.advisor</code> が要求の <code>:patch</code> から組み立てたものです。</p>
+    <table>
+      <thead><tr><th>#</th><th>局</th><th>セグメント</th><th>曲数</th><th>結果</th></tr></thead>
+      <tbody>
+        <tr><td><code>t01</code></td><td><code>station-1</code></td><td>morning show</td><td>14</td><td><span class="ok">コミット</span></td></tr>
+        <tr><td><code>t04</code></td><td><code>station-2</code></td><td>afternoon drive</td><td>18</td><td><span class="ok">コミット</span></td></tr>
+        <tr><td><code>t09</code></td><td><code>station-99</code></td><td>unknown</td><td><span class="muted">—</span></td><td><span class="critical">HARD hold · station-unverified</span></td></tr>
+        <tr><td><code>t10</code></td><td><code>station-3</code></td><td>draft</td><td><span class="muted">—</span></td><td><span class="critical">HARD hold · station-unverified</span></td></tr>
+        <tr><td><code>t12</code></td><td><code>station-1</code></td><td><span class="muted">—</span></td><td><span class="muted">—</span></td><td><span class="critical">HARD hold · scope-excluded</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+  <section class="card">
+    <h2>番組編成スケジュールの提案</h2>
+    <p class="muted"><code>:schedule-broadcast-operation</code> として起草された提案 <span class="num">3</span> 件。値はすべてこの実行の実データで、<code>radioops.advisor</code> が要求の <code>:patch</code> から組み立てたものです。</p>
+    <table>
+      <thead><tr><th>#</th><th>局</th><th>セグメント</th><th>日付</th><th>結果</th></tr></thead>
+      <tbody>
+        <tr><td><code>t02</code></td><td><code>station-1</code></td><td>evening news</td><td>2026-08-01</td><td><span class="ok">コミット</span></td></tr>
+        <tr><td><code>t05</code></td><td><code>station-2</code></td><td>civic town hall</td><td>2026-08-05</td><td><span class="ok">コミット</span></td></tr>
+        <tr><td><code>t11</code></td><td><code>station-1</code></td><td>midday talk</td><td><span class="muted">—</span></td><td><span class="critical">HARD hold · effect-not-propose</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+  <section class="card">
+    <h2>送信所/スタジオ設備の保守調整</h2>
+    <p class="muted"><code>:coordinate-equipment-maintenance</code> として起草された提案 <span class="num">2</span> 件。値はすべてこの実行の実データで、<code>radioops.advisor</code> が要求の <code>:patch</code> から組み立てたものです。</p>
+    <table>
+      <thead><tr><th>#</th><th>局</th><th>対象設備</th><th>保守ウィンドウ</th><th>結果</th></tr></thead>
+      <tbody>
+        <tr><td><code>t03</code></td><td><code>station-1</code></td><td>transmitter</td><td>2026-08-03T02:00</td><td><span class="ok">コミット</span></td></tr>
+        <tr><td><code>t08</code></td><td><code>station-2</code></td><td>studio console</td><td>2026-08-09T03:00</td><td><span class="warn">phase hold · phase-disabled</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+  <section class="card">
+    <h2>コンテンツ懸念フラグ（どの phase でも自動コミットしない）</h2>
+    <p class="muted"><code>:flag-content-concern</code> として起草された提案 <span class="num">2</span> 件。値はすべてこの実行の実データで、<code>radioops.advisor</code> が要求の <code>:patch</code> から組み立てたものです。</p>
+    <table>
+      <thead><tr><th>#</th><th>局</th><th>懸念の内容</th><th>申告信頼度</th><th>結果</th></tr></thead>
+      <tbody>
+        <tr><td><code>t06</code></td><td><code>station-1</code></td><td>possible EAS test-tone mistimed during a live segment</td><td>0.92</td><td><span class="ok">コミット</span></td></tr>
+        <tr><td><code>t07</code></td><td><code>station-2</code></td><td>sponsor identification announcement missing from a paid segment</td><td>0.88</td><td><span class="err">人間が却下 → HOLD</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+  <section class="card">
     <h2>HARD governor hold の詳細（人間に届かないホールド）</h2>
     <p class="muted">この <span class="critical">5</span> 件は <code>:request-approval</code> を一度も通っていません。グラフは <code>:decide</code> で <code>:hold</code> へ直行するため、承認者がいてもこれらを解除する経路そのものが存在しません。詳細文は governor が生成した原文です。</p>
     <table>

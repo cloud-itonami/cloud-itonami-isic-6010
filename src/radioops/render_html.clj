@@ -426,6 +426,99 @@
                (run-path r)
                (run-outcome r))))))
 
+;; ----------------------------- drafted proposals -----------------------------
+;;
+;; The trace above says WHETHER a run committed; these two sections say
+;; WHAT was actually drafted. That distinction is load-bearing: a held
+;; proposal never reaches the SSoT, so its payload exists ONLY on the
+;; graph run's `:proposal` channel. Reading the store alone, an operator
+;; can see that something was stopped but not what it would have done --
+;; which is exactly the thing a reviewer needs in order to judge whether
+;; the governor stopped the right thing.
+
+(defn- stopped-by
+  "What actually stopped this run, derived from the run's own audit
+  channel (not from the label)."
+  [{:keys [state]}]
+  (let [last-f (last (:audit state))]
+    (cond
+      (= :commit (:disposition state)) (tag "ok" "何も止めていない（コミット済み）")
+      (human-hold? last-f)             (tag "err" "人間（承認者が却下）")
+      (hard-hold? last-f)
+      (tag "critical" (str "governor · "
+                           (str/join ", " (map #(nm (:rule %)) (:violations last-f)))))
+      (phase-hold? last-f)             (tag "warn" (str "phase gate · " (nm (:phase-reason last-f))))
+      :else                            (tag "muted" (nm (:disposition state))))))
+
+(defn- kv-pairs
+  "A proposal's draft payload as stable, sorted key/value chips, so a
+  held proposal's content is legible instead of a single `pr-str` blob."
+  [m]
+  (let [m (dissoc m :station-id)]
+    (if (seq m)
+      (str/join " "
+                (for [k (sort-by nm (keys m))]
+                  (str (code (str k)) "=" (tag "num" (esc (pr-str (get m k)))))))
+      (tag "muted" "（空）"))))
+
+(defn- proposals-section [runs]
+  (section
+   "advisor が起草した提案の全文（コミットされなかったものを含む）"
+   (str "上のトレースは<strong>止まったかどうか</strong>を、この表は"
+        "<strong>何が起草されたか</strong>を示します。"
+        "ホールドされた提案は SSoT に一切書かれないため、その中身は"
+        "グラフ実行の " (code ":proposal") " チャネルにしか存在しません"
+        "——台帳だけを読んでも「何が止められたのか」は分かりません。"
+        "行は " (code "radioops.advisor") " が実際に返した提案そのもので、"
+        (code ":effect") " が " (code ":propose") " 以外の行は advisor の逸脱です。")
+   (tbl ["#" "op" "局" ":effect" "信頼度" "advisor の要約" "下書き payload" "何が止めたか"]
+        (for [{:keys [id state] :as r} runs
+              :let [p (:proposal state)]]
+          (row (code id)
+               (if (:op p) (code (str (:op p))) (tag "muted" "—"))
+               (code (or (:station-id p) "—"))
+               (if (= :propose (:effect p))
+                 (code ":propose")
+                 (tag "critical" (code (str (:effect p)))))
+               (tag "num" (or (:confidence p) "—"))
+               (if (:summary p) (esc (:summary p)) (tag "muted" "—"))
+               (kv-pairs (:value p))
+               (stopped-by r))))))
+
+(def ^:private op-columns
+  "Per-op domain columns. The keys are the `:patch` fields this actor's
+  own advisor copies into a proposal's `:value`, so each op kind is
+  shown in the vocabulary of the operation it actually is, rather than
+  as a generic map dump."
+  [[:log-broadcast-record "放送記録のログ（プレイリスト/セグメント/オンエアログ）"
+    [[:segment "セグメント"] [:playlist-count "曲数"]]]
+   [:schedule-broadcast-operation "番組編成スケジュールの提案"
+    [[:segment "セグメント"] [:date "日付"]]]
+   [:coordinate-equipment-maintenance "送信所/スタジオ設備の保守調整"
+    [[:equipment "対象設備"] [:window "保守ウィンドウ"]]]
+   [:flag-content-concern "コンテンツ懸念フラグ（どの phase でも自動コミットしない）"
+    [[:concern "懸念の内容"] [:confidence "申告信頼度"]]]])
+
+(defn- op-breakout-sections [runs]
+  (str/join
+   (for [[op title cols] op-columns
+         :let [rs (filter #(= op (-> % :state :proposal :op)) runs)]]
+     (section
+      title
+      (str (code (str op)) " として起草された提案 " (tag "num" (count rs)) " 件。"
+           "値はすべてこの実行の実データで、"
+           (code "radioops.advisor") " が要求の " (code ":patch") " から組み立てたものです。")
+      (tbl (concat ["#" "局"] (map second cols) ["結果"])
+           (for [{:keys [id state] :as r} rs
+                 :let [v (-> state :proposal :value)]]
+             (apply row
+                    (concat [(code id) (code (:station-id v "—"))]
+                            (for [[k _] cols]
+                              (if (contains? v k)
+                                (esc (str (get v k)))
+                                (tag "muted" "—")))
+                            [(run-outcome r)]))))))))
+
 (defn- hard-holds-section [db]
   (let [hard (hard-holds db)]
     (section
@@ -599,6 +692,8 @@
      (phase-section)
      (governor-section db)
      (runs-section runs)
+     (proposals-section runs)
+     (op-breakout-sections runs)
      (hard-holds-section db)
      (ledger-section db)
      (records-section db runs)
