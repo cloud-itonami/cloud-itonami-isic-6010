@@ -2475,7 +2475,7 @@ img,svg { max-width: 100%; height: auto; }
 <main>
   <section class="card">
     <h2>この実行の要約</h2>
-    <p class="muted">下の数値はすべてこのページを生成した1回の実行の結果です。生成器 <code>radioops.render-html</code> が <code>clojure -M:dev:render-html</code> で実 actor を走らせ、その store と audit ledger だけを読んで描画しています。</p>
+    <p class="muted">下の数値はすべてこのページを生成した1回の実行の結果です。生成器 <code>radioops.render-html</code> が <code>kbb -M:dev:render-html</code> で実 actor を走らせ、その store と audit ledger だけを読んで描画しています。</p>
     <table>
       <thead><tr><th>指標</th><th>値</th><th>出所</th></tr></thead>
       <tbody>
@@ -2711,7 +2711,7 @@ img,svg { max-width: 100%; height: auto; }
   </section>
 </main>
 <footer>
-  <p>このページは手書きではありません。<code>radioops.render-html</code> が <code>radioops.operation</code>（langgraph-clj StateGraph）を実際に走らせ、その <code>radioops.store</code> の SSoT と append-only 監査台帳だけを読んで生成しています。再生成は <code>clojure -M:dev:render-html</code>。同じシードに対して決定的（タイムスタンプ・乱数なし）なので、2回生成すればバイト単位で一致します。</p>
+  <p>このページは手書きではありません。<code>radioops.render-html</code> が <code>radioops.operation</code>（langgraph-clj StateGraph）を実際に走らせ、その <code>radioops.store</code> の SSoT と append-only 監査台帳だけを読んで生成しています。再生成は <code>kbb -M:dev:render-html</code>。同じシードに対して決定的（タイムスタンプ・乱数なし）なので、2回生成すればバイト単位で一致します。</p>
   <p>cloud-itonami-isic-6010 · AGPL-3.0-or-later</p>
 </footer>
 </body></html>
