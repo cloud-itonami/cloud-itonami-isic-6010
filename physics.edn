@@ -1,0 +1,35 @@
+;; What this vertical's robot physically does, declared for
+;; kotoba.robotics.process (kotoba-lang/robotics). `kbb -M:dev:physics` runs it.
+;;
+;; README "Robotics premise": for a licensed radio broadcast station
+;; (ISIC 6010) robots do transmitter-tower inspection and studio /
+;; transmission-equipment maintenance, gated by the Radio Broadcast
+;; Governor. Physical work modelled here: a maintenance arm swapping a
+;; hot-pluggable power-amplifier module in the transmitter rack, and the
+;; fire resistance of the transmitter shelter wall that the inspection
+;; robot's site survey has to judge (brush-fire exposure).
+;;
+;; Every number without a cited source is marked `estimate` in its :basis.
+;; Replacing an estimate with a sourced value is this bot's growth work.
+{:physics/schema "itonami.physical-ai.spec.v1"
+ :repo "cloud-itonami/cloud-itonami-isic-6010"
+ :cases
+ [{:id :pa-module-swap
+   :kind :manipulator
+   :procedure "maintenance arm withdraws a power-amplifier module from the transmitter rack's lower slot and lifts it to the service trolley's top tray"
+   :params {:l1-m 0.60 :l2-m 0.55 :m1-kg 8.0 :m2-kg 6.0
+            :from [0.70 -0.30] :to [0.35 0.60] :duration-s 2.5 :steps 500}
+   :sweep {:param :payload-kg :values [5.0 10.0 15.0 20.0 30.0]}
+   :quantity :peak-tau1-nm
+   :limit {:max 180.0 :basis "estimate: continuous shoulder torque of a ~12 kg-payload collaborative arm class"}
+   :boundary {:lo 1.0 :hi 80.0}}
+  {:id :transmitter-shelter-wall-fire
+   :kind :thermal
+   :procedure "concrete wall of the transmitter shelter exposed on its outer face to the ISO 834 standard fire (brush fire reaching the site)"
+   :params {:conductivity-w-mk 1.6 :density-kg-m3 2300.0 :specific-heat-j-kgk 1000.0
+            :t0-c 20.0 :hot-curve :iso-834 :h-front-w-m2k 25.0 :t-back-ambient-c 20.0 :h-back-w-m2k 9.0
+            :threshold-c 160.0 :duration-s 14400.0 :nodes 21}
+   :sweep {:param :thickness-m :values [0.06 0.08 0.10 0.12 0.15]}
+   :quantity :time-to-threshold-s
+   :limit {:min 3600.0 :basis "estimate: a 60-minute insulation rating for the shelter (site requirement not yet sourced); the 140 K unexposed-face rise used as threshold is the ISO 834-1 insulation criterion"}
+   :boundary {:lo 0.04 :hi 0.15}}]}
