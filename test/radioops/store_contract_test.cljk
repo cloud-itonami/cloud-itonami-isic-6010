@@ -1,6 +1,6 @@
 (ns radioops.store-contract-test
   "Contract tests for `radioops.store/Store` protocol."
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [kotoba.test :refer [deftest is testing]]
             [radioops.store :as store]))
 
 (deftest mem-store-station-lookup

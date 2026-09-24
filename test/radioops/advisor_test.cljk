@@ -1,6 +1,6 @@
 (ns radioops.advisor-test
   "Unit tests of `radioops.advisor` proposal generation."
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [kotoba.test :refer [deftest is testing]]
             [radioops.advisor :as adv]
             [radioops.governor :as gov]
             [radioops.store :as store]))
